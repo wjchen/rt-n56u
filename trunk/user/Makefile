@@ -209,8 +209,6 @@ dir_$(CONFIG_FIRMWARE_INCLUDE_PARTED)		+= parted
 dir_$(CONFIG_FIRMWARE_INCLUDE_FTPD)		+= vsftpd
 dir_$(CONFIG_FIRMWARE_INCLUDE_MINIDLNA)		+= minidlna
 dir_$(CONFIG_FIRMWARE_INCLUDE_FIREFLY)		+= firefly
-dir_$(CONFIG_FIRMWARE_INCLUDE_TRANSMISSION)	+= transmission
-dir_$(ARIA2_ENABLED)		+= aria2
 endif
 
 dir_$(CONFIG_FIRMWARE_INCLUDE_KOOLPROXY)		+= koolproxy
@@ -223,6 +221,8 @@ dir_y						+= util-linux
 endif
 dir_y						+= mtd-utils
 endif
+dir_$(CONFIG_FIRMWARE_INCLUDE_TRANSMISSION)    += transmission
+dir_$(CONFIG_FIRMWARE_INCLUDE_ARIA)            += aria2
 
 all:
 	for i in $(dir_y) ; do \
