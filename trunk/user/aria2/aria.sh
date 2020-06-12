@@ -72,6 +72,9 @@ file-allocation=none
 no-file-allocation-limit=10M
 allow-overwrite=false
 auto-file-renaming=true
+save-session-interval=60
+force-save=true
+
 
 ### Bittorent
 bt-enable-lpd=false

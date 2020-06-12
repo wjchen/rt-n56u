@@ -10,7 +10,7 @@ all: download_test extra_test
 
 download_test:
 	( if [ ! -f $(FRP_NAME).tar.gz ]; then \
-		wget -t5 --timeout=20 --no-check-certificate -O $(FRP_NAME).tar.gz $(FRP_URL); \
+		wget -t10 --timeout=40 --no-check-certificate -O $(FRP_NAME).tar.gz $(FRP_URL); \
 	fi )
 
 extra_test:
