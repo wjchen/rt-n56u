@@ -223,7 +223,7 @@ logger -t "SmartDNS" "添加DNS转发到$sdns_port端口"
 }
 del_dns() {
 sed -i '/no-resolv/d' /etc/storage/dnsmasq/dnsmasq.conf
-sed -i '/server=127.0.0.1/d' /etc/storage/dnsmasq/dnsmasq.conf
+sed -i "/server=127.0.0.1#$sdns_port/d" /etc/storage/dnsmasq/dnsmasq.conf
 /sbin/restart_dhcpd
 }
 

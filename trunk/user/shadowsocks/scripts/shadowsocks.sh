@@ -316,7 +316,7 @@ case "$run_mode" in
 		dns2tcp -L"127.0.0.1#5353" -R"$(nvram get tunnel_forward)" >/dev/null 2>&1 &
 		chinadns-ng -b 0.0.0.0 -l 65353 -c $(nvram get china_dns) -t 127.0.0.1#5353 -4 china -m /tmp/cdn.txt >/dev/null 2>&1 &
 	sed -i '/no-resolv/d' /etc/storage/dnsmasq/dnsmasq.conf
-sed -i '/server=127.0.0.1/d' /etc/storage/dnsmasq/dnsmasq.conf
+sed -i '/server=127.0.0.1#65353/d' /etc/storage/dnsmasq/dnsmasq.conf
 cat >> /etc/storage/dnsmasq/dnsmasq.conf << EOF
 no-resolv
 server=127.0.0.1#65353
@@ -483,7 +483,7 @@ ssp_close() {
 	kill -9 $(ps | grep ssr-monitor | grep -v grep | awk '{print $1}') >/dev/null 2>&1
 	kill_process
 	sed -i '/no-resolv/d' /etc/storage/dnsmasq/dnsmasq.conf
-	sed -i '/server=127.0.0.1/d' /etc/storage/dnsmasq/dnsmasq.conf
+	sed -i '/server=127.0.0.1#65353/d' /etc/storage/dnsmasq/dnsmasq.conf
 	sed -i '/cdn/d' /etc/storage/dnsmasq/dnsmasq.conf
 	sed -i '/gfwlist/d' /etc/storage/dnsmasq/dnsmasq.conf
 	sed -i '/dnsmasq.oversea/d' /etc/storage/dnsmasq/dnsmasq.conf
