@@ -32,6 +32,22 @@ lan_con=`nvram get lan_con`
 GLOBAL_SERVER=`nvram get global_server`
 socks=""
 
+adg_enable=`nvram get adg_enable`
+sdns_enable=`nvram get sdns_enable`
+adg_redirect=`nvram get adg_redirect`
+snds_redirect=`nvram get snds_redirect`
+# if ((adg_enable == 1 && adg_redirect == 1) || (sdns_enable == 1 && snds_redirect == 1) ) 
+#      printf("dns enabled");
+# else del no-resolv
+
+del_no_resolv() {
+	if [ "$adg_enable" = "1" -a "$adg_redirect" = "1" ] || [ "$sdns_enable" = "1" -a "$snds_redirect" = "1" ]; then
+		logger -t "SS" "dns redirect enabled"
+	else
+		sed -i '/no-resolv/d' /etc/storage/dnsmasq/dnsmasq.conf
+	fi
+}
+
 find_bin() {
 	case "$1" in
 	ss) ret="/usr/bin/ss-redir" ;;
@@ -315,7 +331,7 @@ case "$run_mode" in
 		logger -st "SS" "启动chinadns..."
 		dns2tcp -L"127.0.0.1#5353" -R"$(nvram get tunnel_forward)" >/dev/null 2>&1 &
 		chinadns-ng -b 0.0.0.0 -l 65353 -c $(nvram get china_dns) -t 127.0.0.1#5353 -4 china -m /tmp/cdn.txt >/dev/null 2>&1 &
-	sed -i '/no-resolv/d' /etc/storage/dnsmasq/dnsmasq.conf
+	del_no_resolv
 sed -i '/server=127.0.0.1#65353/d' /etc/storage/dnsmasq/dnsmasq.conf
 cat >> /etc/storage/dnsmasq/dnsmasq.conf << EOF
 no-resolv
@@ -482,7 +498,7 @@ ssp_close() {
 	kill -9 $(ps | grep ssr-switch | grep -v grep | awk '{print $1}') >/dev/null 2>&1
 	kill -9 $(ps | grep ssr-monitor | grep -v grep | awk '{print $1}') >/dev/null 2>&1
 	kill_process
-	sed -i '/no-resolv/d' /etc/storage/dnsmasq/dnsmasq.conf
+	del_no_resolv
 	sed -i '/server=127.0.0.1#65353/d' /etc/storage/dnsmasq/dnsmasq.conf
 	sed -i '/cdn/d' /etc/storage/dnsmasq/dnsmasq.conf
 	sed -i '/gfwlist/d' /etc/storage/dnsmasq/dnsmasq.conf
