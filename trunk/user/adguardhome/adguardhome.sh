@@ -70,11 +70,15 @@ rlimit_nofile: 0
 dns:
   bind_host: 0.0.0.0
   port: 5335
+  statistics_interval: 1
+  querylog_interval: 1
+  querylog_enabled: true
+  querylog_file_enabled: true
+  querylog_size_memory: 1000
   protection_enabled: true
   filtering_enabled: true
   blocking_mode: nxdomain
   blocked_response_ttl: 10
-  querylog_enabled: true
   ratelimit: 20
   ratelimit_whitelist: []
   refuse_any: true
@@ -127,9 +131,14 @@ dhcp:
   lease_duration: 86400
   icmp_timeout_msec: 1000
 clients: []
-log_file: ""
 verbose: false
 schema_version: 3
+log_compress: false
+log_localtime: false
+log_max_backups: 0
+log_max_size: 100
+log_max_age: 3
+log_file: ""
 
 EEE
 	chmod 755 "$adg_file"
@@ -139,7 +148,7 @@ fi
 dl_adg(){
 logger -t "AdGuardHome" "下载AdGuardHome"
 #wget --no-check-certificate -O /tmp/AdGuardHome.tar.gz https://github.com/AdguardTeam/AdGuardHome/releases/download/v0.101.0/AdGuardHome_linux_mipsle.tar.gz
-curl -k -s -o /tmp/AdGuardHome/AdGuardHome --connect-timeout 10 --retry 3 https://cdn.jsdelivr.net/gh/chongshengB/rt-n56u/trunk/user/adguardhome/AdGuardHome
+curl -k -s -o /tmp/AdGuardHome/AdGuardHome --connect-timeout 10 --retry 3 https://cdn.jsdelivr.net/gh/wjchen/rt-n56u/trunk/user/adguardhome/AdGuardHome
 if [ ! -f "/tmp/AdGuardHome/AdGuardHome" ]; then
 logger -t "AdGuardHome" "AdGuardHome下载失败，请检查是否能正常访问github!程序将退出。"
 nvram set adg_enable=0
@@ -153,18 +162,26 @@ fi
 start_adg(){
     mkdir -p /tmp/AdGuardHome
 	mkdir -p /etc/storage/AdGuardHome
-	if [ ! -f "/tmp/AdGuardHome/AdGuardHome" ]; then
-	dl_adg
-	fi
+  usr_bin_adg="x"
+  if [ ! -f "/usr/bin/AdGuardHome" ]; then
+	    if [ ! -f "/tmp/AdGuardHome/AdGuardHome" ]; then
+	    dl_adg
+	    fi
+  else
+    usr_bin_adg="y"
+  fi
 	getconfig
 	change_dns
 	set_iptable
 	logger -t "AdGuardHome" "运行AdGuardHome"
-	eval "/tmp/AdGuardHome/AdGuardHome -c $adg_file -w /tmp/AdGuardHome -v" &
-
+  if [ $usr_bin_adg = "y" ]; then
+    eval "/usr/bin/AdGuardHome -c $adg_file -w /tmp/AdGuardHome " &
+  else
+    eval "/tmp/AdGuardHome/AdGuardHome -c $adg_file -w /tmp/AdGuardHome " &
+  fi
 }
 stop_adg(){
-rm -rf /tmp/AdGuardHome
+rm -rf /tmp/AdGuardHome/AdGuardHome
 killall -9 AdGuardHome
 del_dns
 clear_iptable

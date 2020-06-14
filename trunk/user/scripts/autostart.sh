@@ -77,6 +77,5 @@ fi
 
 if [ -f /etc/storage/autostart.sh ]; then
 logger -t "自动启动" "启动自定义脚本"
-chmod 0755 /etc/storage/autostart.sh
 /etc/storage/autostart.sh
 fi
